@@ -1,68 +1,59 @@
 import discord
 from discord.ext import commands
+import random
 
+# Intenciones necesarias
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-intents.members = True  # Necesario para acceder a los miembros del servidor
 
+# Crear el bot
 bot = commands.Bot(command_prefix='$', intents=intents)
 
+# Lista de contaminaciones y sus soluciones
+contaminaciones = [
+    {
+        "tipo": " Contaminación del aire",
+        "causa": "Producida por los carros, fábricas y quema de basura.",
+        "solucion": "Usar bicicleta, caminar o compartir carro para reducir gases."
+    },
+    {
+        "tipo": " Contaminación del agua",
+        "causa": "Químicos y basura tirados en ríos o playas.",
+        "solucion": "No tires basura en la calle y usa menos productos tóxicos."
+    },
+    {
+        "tipo": " Contaminación del suelo",
+        "causa": "Por tirar basura fuera de los zafacones o verter químicos.",
+        "solucion": "Separar la basura, reciclar y no tirar aceite ni pintura en el piso."
+    },
+    {
+        "tipo": " Contaminación sonora",
+        "causa": "Ruido excesivo de bocinas, motores y construcciones.",
+        "solucion": "Bajar el volumen, usar audífonos y respetar zonas tranquilas."
+    },
+    {
+        "tipo": " Contaminación lumínica",
+        "causa": "Demasiadas luces encendidas toda la noche.",
+        "solucion": "Apagar luces que no se usan y usar bombillas eficientes."
+    }
+]
+
+# Evento cuando el bot está listo
 @bot.event
 async def on_ready():
     print(f'Tu bot {bot.user} está en línea')
 
-
+# Comando para mostrar una contaminación y su solución
 @bot.command()
-async def henry(ctx, *, mensaje: str = ""):
-    mensaje = mensaje.lower().strip()
+async def contaminacion(ctx):
+    dato = random.choice(contaminaciones)
+    mensaje = (
+        f"**{dato['tipo']}**\n"
+        f" *Causa:* {dato['causa']}\n"
+        f" *Solución:* {dato['solucion']}"
+    )
+    await ctx.send(mensaje)
 
-    if mensaje == "saludar todos":
-        # Obtener todos los miembros del canal
-        members = ctx.channel.members
-        sent = 0
-        for member in members:
-            if not member.bot:  # Ignorar bots
-                try:
-                    await member.send(
-                        f"¡Hola {member.name}! Soy un bot que puede saludarte. "
-                        "Escríbeme 'hola' o usa el comando `$henry hola` para probar. (No le digas pero, es un poco inutil y esta en progreso)"
-                    )
-                    sent += 1
-                except:
-                    print(f"No pude enviarle mensaje a {member.name}")
-
-        await ctx.send(f"Saludé por privado a {member.name} ")
-    
-    elif mensaje == 'hola':
-        await ctx.send('Hola, ¿cómo estás?')
-    elif mensaje == 'buenas':
-        await ctx.send('Buenas, ¿qué tal?')
-    elif mensaje == "eres inutil":
-        await ctx.send("COMO TE ATREVES SI SOY EL GRADIOSO HENRY, DISCULPATE O TE BOTARE DEL GRUPO (No le digan pero no puede hacer esto ni contestarte mas despues cuando te disculpes, realmente es inutil)")
-    elif mensaje == "miembros":
-        for member in ctx.guild.members:
-            await ctx.send(member.name)
-    else:
-        await ctx.send('comando invalido')
-
-@bot.event
-async def on_message(message):
-    if message.author == bot.user:
-        return
-
-    content = message.content.lower().strip()
-
-    if content in ['hola', 'buenas']:
-        try:
-            await message.author.send(
-                f"¡Hola {message.author.name}! Soy un bot que puede saludarte. "
-                "Escríbeme 'hola' o usa `$saludar hola`."
-            )
-        except:
-            print(f"No pude mandar mensaje privado a {message.author.name}")
-    
-    await bot.process_commands(message)
-
-token = ""
-bot.run(token)
+# Iniciar el bot (reemplaza por tu token real)
+bot.run('')
